@@ -27,30 +27,47 @@ const doSomething = (progress) => {
   });
 };
 
-const lenis = new Lenis({
-  duration: 0.1,
-  // easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
-  direction: 'vertical', // vertical, horizontal
-  gestureDirection: 'vertical', // vertical, horizontal, both
-  smooth: true,
-  mouseMultiplier: 1,
-  smoothTouch: false,
-  touchMultiplier: 2,
-  infinite: false,
-});
+const scrollNoLibrary = () => {
+  getPageYScroll();
+  items.forEach((item, i) => {
+    item.docScroll = docScroll;
+    if (item.isVisible) {
+      if (item.insideViewport) {
+        item.render();
+      } else {
+        item.insideViewport = true;
+        item.update();
+      }
+    } else {
+      item.insideViewport = false;
+    }
+  });
+};
 
-//get scroll value
-lenis.on('scroll', ({ scroll, limit, velocity, direction, progress }) => {
-  console.log(scroll);
-  doSomething(progress);
-});
+// const lenis = new Lenis({
+//   duration: 0.1,
+//   // easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
+//   direction: 'vertical', // vertical, horizontal
+//   gestureDirection: 'vertical', // vertical, horizontal, both
+//   smooth: true,
+//   mouseMultiplier: 1,
+//   smoothTouch: false,
+//   touchMultiplier: 2,
+//   infinite: false,
+// });
 
-function raf(time) {
-  lenis.raf(time);
-  requestAnimationFrame(raf);
-}
+// //get scroll value
+// lenis.on('scroll', ({ scroll, limit, velocity, direction, progress }) => {
+//   console.log(scroll);
+//   doSomething(progress);
+// });
 
-requestAnimationFrame(raf);
+// function raf(time) {
+//   lenis.raf(time);
+//   requestAnimationFrame(raf);
+// }
+
+// requestAnimationFrame(raf);
 
 /***********************************/
 /********** Preload stuff **********/
@@ -68,11 +85,12 @@ const preloadImages = () => {
 
 // And then..
 preloadImages().then(() => {
-  // Remove the loader
   document.body.classList.remove('loading');
-
   const slides = document.querySelectorAll('.content__item');
   slides.forEach((slide) => items.push(new ParallaxItem(slide)));
-
   items.forEach((item) => (item.docScroll = docScroll));
+  window.addEventListener('scroll', () => {
+    console.log('scroll');
+    requestAnimationFrame(scrollNoLibrary);
+  });
 });
