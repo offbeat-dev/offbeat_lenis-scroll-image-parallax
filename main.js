@@ -90,7 +90,6 @@ preloadImages().then(() => {
   slides.forEach((slide) => items.push(new ParallaxItem(slide)));
   items.forEach((item) => (item.docScroll = docScroll));
   window.addEventListener('scroll', () => {
-    console.log('scroll');
     requestAnimationFrame(scrollNoLibrary);
   });
 });
